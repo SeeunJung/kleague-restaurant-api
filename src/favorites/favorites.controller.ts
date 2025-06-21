@@ -16,6 +16,11 @@ import { User } from '@prisma/client';
 export class FavoritesController {
   constructor(private readonly favoritesService: FavoritesService) {}
 
+  @Post('me')
+  getMyFavorites(@CurrentUser() user: User) {
+    return this.favoritesService.getMyFavorites(user.id);
+  }
+
   @Post(':restaurantId')
   add(
     @CurrentUser() user: User,
@@ -30,10 +35,5 @@ export class FavoritesController {
     @Param('restaurantId', ParseIntPipe) restaurantId: number,
   ) {
     return this.favoritesService.removeFavorite(user.id, restaurantId);
-  }
-
-  @Post('me')
-  getMyFavorites(@CurrentUser() user: User) {
-    return this.favoritesService.getMyFavorites(user.id);
   }
 }

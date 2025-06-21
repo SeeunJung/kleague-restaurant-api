@@ -2,7 +2,6 @@ import {
   IsString,
   MinLength,
   IsEmail,
-  IsOptional,
   IsNotEmpty,
   Matches,
 } from 'class-validator';
@@ -31,7 +30,7 @@ export class SignupDto {
   @Matches(/^01[0-9]{8,9}$/)
   phoneNumber: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  favoriteTeam?: string;
+  favoriteTeam: string;
 }
