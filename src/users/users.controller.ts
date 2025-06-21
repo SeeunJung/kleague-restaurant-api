@@ -10,7 +10,7 @@ import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { CurrentUser } from 'src/common/decorators/user.decorator';
-import { User } from 'generated/prisma';
+import { User } from '@prisma/client';
 
 @Controller('users')
 export class UsersController {
