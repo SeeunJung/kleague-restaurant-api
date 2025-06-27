@@ -13,9 +13,9 @@ export class StadiumsService {
       orderBy: { id: 'asc' },
     });
 
-    return (await stadiums).map((s) => ({
-      ...s,
-      restaurantCount: s._count.restaurants,
+    return (await stadiums).map(({ _count, ...rest }) => ({
+      ...rest,
+      restaurantCount: _count.restaurants,
     }));
   }
 
