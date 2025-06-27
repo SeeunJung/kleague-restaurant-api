@@ -34,7 +34,20 @@ export class RestaurantsService {
       include: {
         stadium: true,
         reviews: {
-          include: { user: true },
+          include: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                nickname: true,
+                email: true,
+                phoneNumber: true,
+                favoriteTeam: true,
+                createdAt: true,
+                updatedAt: true,
+              },
+            },
+          },
           orderBy: { createdAt: 'desc' },
         },
       },
