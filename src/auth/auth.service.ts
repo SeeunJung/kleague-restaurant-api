@@ -1,6 +1,7 @@
 import {
   ConflictException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
@@ -9,6 +10,7 @@ import * as bcrypt from 'bcrypt';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { User } from '@prisma/client';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -85,6 +87,27 @@ export class AuthService {
       user: userWithoutPassword,
       accessToken,
     };
+  }
+
+  async resetPassword(dto: ResetPasswordDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { email: dto.email },
+    });
+
+    if (!user) throw new NotFoundException('가입된 이메일이 없습니다.');
+    if (user.phoneNumber !== dto.phoneNumber) {
+      throw new UnauthorizedException(
+        '해당 이메일로 가입할 때 입력한 전화번호가 아닙니다.',
+      );
+    }
+
+    const hashed = await bcrypt.hash(dto.newPassword, 10);
+    await this.prisma.user.update({
+      where: { email: dto.email },
+      data: { password: hashed },
+    });
+
+    return { message: '비밀번호가 성공적으로 재설정되었습니다.' };
   }
 
   private getJwtToken(userId: number): string {
