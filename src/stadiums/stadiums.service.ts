@@ -6,9 +6,17 @@ export class StadiumsService {
   constructor(private prisma: PrismaService) {}
 
   async getAllStadiums() {
-    return this.prisma.stadium.findMany({
+    const stadiums = this.prisma.stadium.findMany({
+      include: {
+        _count: { select: { restaurants: true } },
+      },
       orderBy: { id: 'asc' },
     });
+
+    return (await stadiums).map((s) => ({
+      ...s,
+      restaurantCount: s._count.restaurants,
+    }));
   }
 
   async getStadiumById(id: number) {
