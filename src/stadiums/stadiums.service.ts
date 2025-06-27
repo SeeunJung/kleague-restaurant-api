@@ -23,10 +23,30 @@ export class StadiumsService {
     const stadium = await this.prisma.stadium.findUnique({
       where: { id },
       include: {
-        restaurants: true, // 주변 맛집 포함
+        restaurants: {
+          include: {
+            reviews: { select: { rating: true } },
+          },
+        },
       },
     });
+
     if (!stadium) throw new NotFoundException('구장을 찾을 수 없습니다.');
-    return stadium;
+
+    const restaurantWithAvg = stadium.restaurants.map((R) => {
+      const avg =
+        R.reviews.reduce((acc, cur) => acc + cur.rating, 0) /
+        Math.max(R.reviews.length, 1);
+
+      return {
+        ...R,
+        avgRating: Number(avg.toFixed(1)),
+      };
+    });
+
+    return {
+      ...stadium,
+      restaurants: restaurantWithAvg,
+    };
   }
 }
