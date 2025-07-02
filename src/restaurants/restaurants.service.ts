@@ -8,17 +8,21 @@ export class RestaurantsService {
   async getAllRestaurants(category?: string, sort?: string) {
     const restaurants = await this.prisma.restaurant.findMany({
       where: category ? { category } : undefined,
+      orderBy: { id: 'asc' },
       include: {
-        _count: { select: { reviews: true } },
-        reviews: { select: { rating: true } },
+        reviews: { select: { rating: true } }, // ✅ 내부 계산용만 사용 (응답엔 제거)
       },
     });
 
-    const withAvg = restaurants.map((r) => {
+    const withAvg = restaurants.map(({ reviews, ...rest }) => {
       const avg =
-        r.reviews.reduce((acc, cur) => acc + cur.rating, 0) /
-        Math.max(r.reviews.length, 1);
-      return { ...r, avgRating: Number(avg.toFixed(1)) };
+        reviews.reduce((acc, cur) => acc + cur.rating, 0) /
+        Math.max(reviews.length, 1);
+
+      return {
+        ...rest,
+        avgRating: Number(avg.toFixed(1)),
+      };
     });
 
     if (sort === 'rating') {
