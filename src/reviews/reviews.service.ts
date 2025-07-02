@@ -15,6 +15,20 @@ export class ReviewsService {
         content: dto.content,
         rating: dto.rating,
       },
+      include: {
+        user: {
+          select: {
+            id: true,
+            username: true,
+            nickname: true,
+            email: true,
+            phoneNumber: true,
+            favoriteTeam: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+      },
     });
   }
 
@@ -30,6 +44,20 @@ export class ReviewsService {
       data: {
         content: dto.content,
         rating: dto.rating,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            username: true,
+            nickname: true,
+            email: true,
+            phoneNumber: true,
+            favoriteTeam: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
       },
     });
   }
