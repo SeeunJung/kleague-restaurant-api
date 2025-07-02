@@ -10,11 +10,12 @@ export class RestaurantsService {
       where: category ? { category } : undefined,
       orderBy: { id: 'asc' },
       include: {
-        reviews: { select: { rating: true } }, // ✅ 내부 계산용만 사용 (응답엔 제거)
+        reviews: { select: { rating: true } },
+        _count: { select: { reviews: true } },
       },
     });
 
-    const withAvg = restaurants.map(({ reviews, ...rest }) => {
+    const withAvg = restaurants.map(({ reviews, _count, ...rest }) => {
       const avg =
         reviews.reduce((acc, cur) => acc + cur.rating, 0) /
         Math.max(reviews.length, 1);
@@ -22,6 +23,7 @@ export class RestaurantsService {
       return {
         ...rest,
         avgRating: Number(avg.toFixed(1)),
+        reviewCount: _count.reviews,
       };
     });
 
