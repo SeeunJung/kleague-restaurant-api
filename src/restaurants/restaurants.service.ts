@@ -10,6 +10,7 @@ export class RestaurantsService {
       where: category ? { category } : undefined,
       orderBy: { id: 'asc' },
       include: {
+        stadium: true,
         reviews: { select: { rating: true } },
         _count: { select: { reviews: true } },
       },
